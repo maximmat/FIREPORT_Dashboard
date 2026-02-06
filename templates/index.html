@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Hasičský Dashboard</title>
+    <style>
+        /* ZÁKLADNÍ NASTAVENÍ */
+        body { margin: 0; padding: 0; background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; cursor: none; }
+        .container { display: flex; height: 100vh; width: 100vw; }
+        
+        /* Levý panel */
+        .info-panel { width: 55%; padding: 40px; border-right: 6px solid #b71c1c; box-sizing: border-box; background: linear-gradient(90deg, #0a0a0a 0%, #111 100%); display: flex; flex-direction: column; }
+        
+        /* Pravý panel - Rozdělený na dvě části */
+        .map-panel { width: 45%; background-color: #222; display: flex; flex-direction: column; }
+        
+        /* Styl pro polovinu mapy */
+        .map-half { width: 100%; height: 50%; overflow: hidden; position: relative; border-bottom: 2px solid #b71c1c; }
+        
+        /* Samotný obrázek mapy */
+        .map-img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        
+        /* Popisky map */
+        .map-label { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; font-size: 0.9rem; font-weight: bold; border-radius: 4px; text-transform: uppercase; }
+
+        /* Styly textů */
+        .label { font-size: 1.1rem; color: #888; text-transform: uppercase; margin-top: 15px; }
+        .header { font-size: 3.5rem; font-weight: 900; color: #ff4444; line-height: 1.1; margin-bottom: 20px; text-shadow: 0 0 20px rgba(255, 0, 0, 0.3); }
+        .address { font-size: 2.2rem; font-weight: 700; color: #ffffff; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
+        .tech-box { font-size: 2rem; font-weight: 700; color: #ffeb3b; background-color: rgba(255, 235, 59, 0.1); padding: 10px 15px; border-left: 5px solid #ffeb3b; margin-bottom: 20px; }
+        .details { font-size: 1.6rem; color: #cccccc; background-color: #1a1a1a; padding: 20px; border-radius: 15px; flex-grow: 1; }
+
+        /* Klidový stav */
+        .idle-state { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; width: 100vw; background: #000; }
+        .idle-title { font-size: 6rem; font-weight: 800; color: #222; }
+        .clock { font-size: 3rem; color: #444; margin-top: 20px; font-family: monospace; }
+
+        /* Tlačítko notifikací (pro PC) */
+        .notify-btn { margin-top: 30px; padding: 10px 20px; background-color: #333; color: #888; border: 1px solid #555; cursor: pointer; border-radius: 5px; font-size: 1rem; transition: 0.3s; }
+        .notify-btn:hover { background-color: #555; color: white; }
+    </style>
+</head>
+<body>
+
+    <div id="idle-view" class="idle-state">
+        <div class="idle-title">PŘIPRAVEN</div>
+        <div class="clock" id="clock">00:00</div>
+        
+        <button id="btn-notify" class="notify-btn" onclick="requestNotifyPermission()">
+            🔔 Povolit upozornění ve Windows
+        </button>
+    </div>
+
+    <div class="container" id="alarm-view" style="display: none;">
+        <div class="info-panel">
+            <span class="label">Typ události</span>
+            <div id="type" class="header">---</div>
+            <span class="label">Místo události</span>
+            <div id="address" class="address">---</div>
+            <span class="label">Výjezdová technika</span>
+            <div id="tech" class="tech-box">---</div>
+            <span class="label">Dopřesnění</span>
+            <div id="desc" class="details">---</div>
+        </div>
+        
+        <div class="map-panel">
+            <div class="map-half">
+                <span class="map-label">Příjezd / Okolí</span>
+                <img id="img-overview" class="map-img" src="" alt="Přehled">
+            </div>
+            <div class="map-half" style="border-bottom: none;">
+                <span class="map-label">Detail místa</span>
+                <img id="img-detail" class="map-img" src="" alt="Detail">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let localLastUpdate = 0;
+
+        function requestNotifyPermission() {
+            if (!("Notification" in window)) {
+                alert("Váš prohlížeč nepodporuje notifikace.");
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    const btn = document.getElementById('btn-notify');
+                    btn.innerText = "✅ Upozornění povolena";
+                    btn.style.color = "#4CAF50";
+                    btn.style.borderColor = "#4CAF50";
+                }
+            });
+        }
+
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('cs-CZ', {hour:'2-digit', minute:'2-digit'});
+        }, 1000);
+
+        async function checkStatus() {
+            try {
+                const response = await fetch('/status');
+                const data = await response.json();
+
+                if (data.aktivni) {
+                    // OKAMŽITÉ PŘEPNUTÍ (bez pop-upu)
+                    document.getElementById('idle-view').style.display = 'none';
+                    document.getElementById('alarm-view').style.display = 'flex';
+
+                    // Vyplnění dat
+                    document.getElementById('type').innerText = data.typ;
+                    document.getElementById('address').innerText = data.adresa;
+                    document.getElementById('tech').innerText = data.technika;
+                    document.getElementById('desc').innerText = data.popis;
+
+                    // Načtení map
+                    const imgOverview = document.getElementById('img-overview');
+                    if (data.mapa_overview && imgOverview.src !== data.mapa_overview) {
+                        imgOverview.src = data.mapa_overview;
+                        imgOverview.style.display = 'block';
+                    }
+                    const imgDetail = document.getElementById('img-detail');
+                    if (data.mapa_detail && imgDetail.src !== data.mapa_detail) {
+                        imgDetail.src = data.mapa_detail;
+                        imgDetail.style.display = 'block';
+                    }
+
+                    // Windows Notifikace (jen bublina, neblokuje obrazovku)
+                    if (data.last_update > localLastUpdate) {
+                        localLastUpdate = data.last_update;
+                        if (Notification.permission === "granted") {
+                            const notification = new Notification("🔥 " + data.typ, {
+                                body: data.adresa + "\n" + data.tech,
+                                requireInteraction: true
+                            });
+                            notification.onclick = function() {
+                                window.focus();
+                                this.close();
+                            };
+                        }
+                    }
+
+                } else {
+                    document.getElementById('idle-view').style.display = 'flex';
+                    document.getElementById('alarm-view').style.display = 'none';
+                }
+            } catch (e) { console.error(e); }
+        }
+        setInterval(checkStatus, 2000);
+    </script>
+</body>
+</html>
