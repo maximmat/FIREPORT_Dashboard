@@ -4,14 +4,14 @@ Informační tabule pro hasičské zbrojnice postavená na Raspberry Pi. Systém
 
 ✨ Klíčové vlastnosti
 
-Automatické probuzení TV:** Využívá protokol HDMI CEC pro zapnutí TV a přepnutí vstupu při poplachu.
-Dvojitá mapa (Turistická):**
-    Horní:* Přehledová mapa pro příjezdové cesty (Zoom 14).
-    Dolní:* Detailní mapa místa zásahu (Zoom 19).
-    Obě mapy využívají podklad "Outdoor" (Turistická) pro maximální čitelnost silnic a čísel popisných.*
-Vizuální alarm:** Okamžité přepnutí z klidového režimu na detaily výjezdu.
-Webové notifikace:** Podpora pro systémová upozornění ve Windows/prohlížeči (i na jiných PC v síti).
-Klidový režim:** Zobrazuje hodiny a stav "PŘIPRAVEN", po nastaveném čase automaticky zhasne/přejde do klidu.
+Automatické probuzení TV: Využívá protokol HDMI CEC pro zapnutí TV a přepnutí vstupu při poplachu.
+Dvojitá mapa (Turistická):
+    Horní: Přehledová mapa pro příjezdové cesty (Zoom 14).
+    Dolní: Detailní mapa místa zásahu (Zoom 19).
+    Obě mapy využívají podklad "Outdoor" (Turistická) pro maximální čitelnost silnic a čísel popisných.
+Vizuální alarm: Okamžité přepnutí z klidového režimu na detaily výjezdu.
+Webové notifikace: Podpora pro systémová upozornění ve Windows/prohlížeči (i na jiných PC v síti).
+Klidový režim: Zobrazuje hodiny a stav "PŘIPRAVEN", po nastaveném čase automaticky zhasne/přejde do klidu.
 
 
 🛠 Požadavky
@@ -165,10 +165,6 @@ Formát JSON:
 
 Speciální "poděkování" patří **Matymu**.
 
-Děkuji mu za jeho neutuchající proud "geniálních nápadů" a vět začínajících slovy *"Hele a nešlo by tam ještě..."*. Díky jeho kreativitě se projekt, který mohl být hotový za jedno odpoledne, protáhl na několik týdnů ladění detailů, překopávání map a řešení pixelů.
+Děkuji mu za jeho neutuchající proud "geniálních nápadů" a vět začínajících slovy *"Hele a nešlo by tam ještě..."*. Díky jeho kreativitě se projekt, který mohl být hotový za pár deítek minut, protáhl na několik hodin ladění detailů, překopávání map a řešení pixelů.
 
-Maty, bez tebe by to bylo hotové dřív a já bych se vyspal. Ale aspoň to teď vypadá k světu. Díky (asi). 💩
-
-```
-
-```
+Maty, bez tebe by to bylo hotové dřív a já bych se vyspal. Ale aspoň to teď vypadá k světu. Díky (asi).
