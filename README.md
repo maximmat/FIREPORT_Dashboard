@@ -5,13 +5,13 @@ Informační tabule pro hasičské zbrojnice postavená na Raspberry Pi. Systém
 ✨ Klíčové vlastnosti
 
 Automatické probuzení TV: Využívá protokol HDMI CEC pro zapnutí TV a přepnutí vstupu při poplachu.
-Dvojitá mapa (Turistická):
-    Horní: Přehledová mapa pro příjezdové cesty (Zoom 14).
-    Dolní: Detailní mapa místa zásahu (Zoom 19).
-    Obě mapy využívají podklad "Outdoor" (Turistická) pro maximální čitelnost silnic a čísel popisných.
-Vizuální alarm: Okamžité přepnutí z klidového režimu na detaily výjezdu.
-Webové notifikace: Podpora pro systémová upozornění ve Windows/prohlížeči (i na jiných PC v síti).
-Klidový režim: Zobrazuje hodiny a stav "PŘIPRAVEN", po nastaveném čase automaticky zhasne/přejde do klidu.
+* Dvojitá mapa (Turistická):
+    * Horní: Přehledová mapa pro příjezdové cesty (Zoom 14).
+    * Dolní: Detailní mapa místa zásahu (Zoom 19).
+    * Obě mapy využívají podklad "Outdoor" (Turistická) pro maximální čitelnost silnic a čísel popisných.
+* Vizuální alarm: Okamžité přepnutí z klidového režimu na detaily výjezdu.
+* Webové notifikace: Podpora pro systémová upozornění ve Windows/prohlížeči (i na jiných PC v síti).
+* Klidový režim: Zobrazuje hodiny a stav "PŘIPRAVEN", po nastaveném čase automaticky zhasne/přejde do klidu.
 
 
 🛠 Požadavky
@@ -28,7 +28,7 @@ Knihovny: `flask`, `requests` (pro Telegram script), `cec-utils`.
 
 🚀 Instalace a nastavení
 
-1. Příprava systému a závislostí
+### 1. Příprava systému a závislostí
 Aktualizujte systém a nainstalujte nástroje pro CEC a prohlížeč Chromium:
 
 ```bash
@@ -45,7 +45,7 @@ sudo apt-get install --no-install-recommends xserver-xorg x11-xserver-utils xini
 
 ```
 
-2. Stažení projektu
+### 2. Stažení projektu
 
 Nahrajte soubory do složky `/home/pi/fireport-dashboard`.
 Struktura složek musí vypadat takto:
