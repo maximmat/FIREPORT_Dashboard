@@ -1,8 +1,8 @@
-Rozumím, pravděpodobně se ti v tom textu, který jsi posílal (nebo v mém předchozím výstupu), rozsypalo formátování u sekce instalace a hlavně u konfiguračních souborů (fireport.service a autostart), které se slily do jednoho řádku.
+Omlouvám se, chápu. Tady to máš v **jednom jediném kuse**.
 
-Tady je to opravené a učesané. Konfigurační soubory jsou správně rozdělené na řádky a celé je to připravené jako jeden blok, který stačí zkopírovat do souboru README.md na GitHubu.
+Toto je **kompletní zdrojový kód** pro soubor `README.md`. Zkopíruj celý obsah uvnitř toho šedého bloku níže (od prvního `#` až dolů) a vlož ho na GitHub.
 
-Markdown
+```markdown
 # 🚒 Fireport Dashboard (Raspberry Pi)
 
 Informační tabule pro hasičské zbrojnice postavená na Raspberry Pi. Systém automaticky přijímá informace o výjezdu, probudí televizi (přes HDMI CEC), zobrazí detaily události a vygeneruje dvě mapy (přehledovou a detailní) pomocí API Mapy.cz.
@@ -44,41 +44,55 @@ Aktualizujte systém a nainstalujte nástroje pro CEC a prohlížeč Chromium:
 sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get install cec-utils chromium-browser python3-flask python3-requests --no-install-recommends
-'''
+
+```
 
 Pokud používáte Lite verzi OS (bez desktopu), doinstalujte grafický server:
 
-Bash
+```bash
 sudo apt-get install --no-install-recommends xserver-xorg x11-xserver-utils xinit openbox
-2. Stažení projektu
-Nahrajte soubory do složky /home/pi/fireport-dashboard. Struktura složek musí vypadat takto:
 
-Plaintext
+```
+
+### 2. Stažení projektu
+
+Nahrajte soubory do složky `/home/pi/fireport-dashboard`.
+Struktura složek musí vypadat takto:
+
+```text
 /home/pi/
 ├── server.py              # Hlavní backend (Flask)
 ├── telegram_listener.py   # Skript pro příjem zpráv (Telethon)
 └── templates/
     └── index.html         # Frontend (vzhled dashboardu)
-3. Konfigurace Mapy.cz API
+
+```
+
+### 3. Konfigurace Mapy.cz API
+
 Pro funkčnost map je nutné mít API klíč od Seznamu.
 
-Jděte na Mapy.cz Developer.
+1. Jděte na [Mapy.cz Developer](https://developer.mapy.cz/).
+2. Vytvořte projekt a API klíč.
+3. **DŮLEŽITÉ:** V nastavení klíče povolte **"Záměrně nezabezpečený API klíč"** (protože RPi nemá veřejnou doménu).
+4. Otevřete `server.py` a vložte klíč:
 
-Vytvořte projekt a API klíč.
-
-DŮLEŽITÉ: V nastavení klíče povolte "Záměrně nezabezpečený API klíč" (protože RPi nemá veřejnou doménu).
-
-Otevřete server.py a vložte klíč:
-
-Python
+```python
 MAPY_CZ_API_KEY = "vložte_váš_dlouhý_klíč_zde"
-⚙️ Automatické spouštění (Systemd)
+
+```
+
+---
+
+## ⚙️ Automatické spouštění (Systemd)
+
 Aby dashboard běžel na pozadí a naběhl po výpadku proudu, vytvořte službu.
 
-1. Služba pro Backend (Flask)
-Vytvořte soubor: sudo nano /etc/systemd/system/fireport.service
+### 1. Služba pro Backend (Flask)
 
-Ini, TOML
+Vytvořte soubor: `sudo nano /etc/systemd/system/fireport.service`
+
+```ini
 [Unit]
 Description=Fireport Dashboard Server
 After=network.target
@@ -92,42 +106,56 @@ RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
+
+```
+
 Povolte službu:
 
-Bash
+```bash
 sudo systemctl enable fireport.service
 sudo systemctl start fireport.service
-2. Autostart prohlížeče (Kiosk mód)
-Upravte autostart soubor grafického prostředí: sudo nano /etc/xdg/lxsession/LXDE-pi/autostart (cesta se může lišit dle verze OS).
+
+```
+
+### 2. Autostart prohlížeče (Kiosk mód)
+
+Upravte autostart soubor grafického prostředí:
+`sudo nano /etc/xdg/lxsession/LXDE-pi/autostart` (cesta se může lišit dle verze OS).
 
 Přidejte na konec:
 
-Bash
+```bash
 @xset s off
 @xset -dpms
 @xset s noblank
 @chromium-browser --noerrdialogs --disable-infobars --kiosk http://localhost:5000
-🔔 Nastavení notifikací (PC/Windows)
+
+```
+
+---
+
+## 🔔 Nastavení notifikací (PC/Windows)
+
 Pokud máte dashboard otevřený na počítači v síti (např. v kanceláři velitele) a chcete dostávat systémová upozornění:
 
-Otevřete v prohlížeči IP adresu RPi (např. http://192.168.1.50:5000).
+1. Otevřete v prohlížeči IP adresu RPi (např. `http://192.168.1.50:5000`).
+2. Klikněte na tlačítko **"🔔 Povolit upozornění ve Windows"**.
+3. **POZOR:** Pokud Chrome blokuje notifikace (protože web neběží na HTTPS), musíte povolit výjimku:
+* Do adresního řádku napište: `chrome://flags/#unsafely-treat-insecure-origin-as-secure`
+* Povolte tuto volbu (**Enabled**).
+* Do pole vložte adresu RPi: `http://192.168.1.50:5000`
+* Restartujte Chrome.
 
-Klikněte na tlačítko "🔔 Povolit upozornění ve Windows".
 
-POZOR: Pokud Chrome blokuje notifikace (protože web neběží na HTTPS), musíte povolit výjimku:
 
-Do adresního řádku napište: chrome://flags/#unsafely-treat-insecure-origin-as-secure
+---
 
-Povolte tuto volbu (Enabled).
+## 📡 Integrace dat (Telegram / Fireport)
 
-Do pole vložte adresu RPi: http://192.168.1.50:5000
+Data do dashboardu se posílají pomocí HTTP POST požadavku.
+Formát JSON:
 
-Restartujte Chrome.
-
-📡 Integrace dat (Telegram / Fireport)
-Data do dashboardu se posílají pomocí HTTP POST požadavku. Formát JSON:
-
-JSON
+```json
 {
   "fireport": "poplach",
   "kategorie": "POŽÁR, LESNÍ POROST",
@@ -137,9 +165,19 @@ JSON
   "gps_lat": "50.853561",
   "gps_lon": "14.826439"
 }
-Poděkování (a stížnosti)
-Speciální "poděkování" patří Matymu.
 
-Děkuji mu za jeho neutuchající proud "geniálních nápadů" a vět začínajících slovy "Hele a nešlo by tam ještě...". Díky jeho kreativitě se projekt, který mohl být hotový za jedno odpoledne, protáhl na několik týdnů ladění detailů, překopávání map a řešení pixelů.
+```
+
+---
+
+## Poděkování (a stížnosti)
+
+Speciální "poděkování" patří **Matymu**.
+
+Děkuji mu za jeho neutuchající proud "geniálních nápadů" a vět začínajících slovy *"Hele a nešlo by tam ještě..."*. Díky jeho kreativitě se projekt, který mohl být hotový za jedno odpoledne, protáhl na několik týdnů ladění detailů, překopávání map a řešení pixelů.
 
 Maty, bez tebe by to bylo hotové dřív a já bych se vyspal. Ale aspoň to teď vypadá k světu. Díky (asi). 💩
+
+```
+
+```
