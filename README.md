@@ -63,7 +63,7 @@ Struktura složek musí vypadat takto:
 
 Pro funkčnost map je nutné mít API klíč od Seznamu.
 
-1. Jděte na [Mapy.cz Developer](https://developer.mapy.cz/).
+1. Jděte na [Mapy.cz Developer](https://developer.mapy.com/).
 2. Vytvořte projekt a API klíč.
 3. **DŮLEŽITÉ:** V nastavení klíče povolte **"Záměrně nezabezpečený API klíč"** (protože RPi nemá veřejnou doménu).
 4. Otevřete `server.py` a vložte klíč:
