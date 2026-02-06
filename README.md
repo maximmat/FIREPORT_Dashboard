@@ -44,6 +44,8 @@ Aktualizujte systém a nainstalujte nástroje pro CEC a prohlížeč Chromium:
 sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get install cec-utils chromium-browser python3-flask python3-requests --no-install-recommends
+'''
+
 Pokud používáte Lite verzi OS (bez desktopu), doinstalujte grafický server:
 
 Bash
